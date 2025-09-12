@@ -1,4 +1,4 @@
-// Azure AI Vision API Service
+// Azure AI Vision API Service (Image Analysis 4.0)
 const AZURE_ENDPOINT = "https://vision54605927.cognitiveservices.azure.com";
 const API_KEY = "6T8n1bGozWj5GjP5jZJL53dXTeK1Y3FN8One3sKXzTgRGvuuexzYJQQJ99BIACqBBLyXJ3w3AAAFACOGJjcG";
 const API_VERSION = "2023-10-01";
@@ -13,15 +13,16 @@ export interface AnalysisOptions {
   language?: string;
 }
 
-// Get analysis options for different feature types
+// Map feature types to IA 4.0 features
 export const getAnalysisOptions = (type: string): AnalysisOptions => {
   switch (type) {
     case 'tags':
       return { visualFeatures: ['Tags'] };
     case 'denseCaptions':
-      return { visualFeatures: ['DenseCaptions', 'Description', 'Tags'] };
+      return { visualFeatures: ['Caption', 'DenseCaptions', 'Tags'] };
     case 'analysis':
-      return { visualFeatures: ['Description', 'Categories', 'Tags'] };
+      // In IA 4.0, Description/Categories are replaced by Caption/Tags
+      return { visualFeatures: ['Caption', 'Tags'] };
     case 'objects':
       return { visualFeatures: ['Objects', 'Tags'] };
     default:
@@ -29,10 +30,15 @@ export const getAnalysisOptions = (type: string): AnalysisOptions => {
   }
 };
 
+const buildUrl = (features: string[], language?: string) => {
+  const featureParam = encodeURIComponent(features.join(','));
+  const lang = language || 'en';
+  return `${AZURE_ENDPOINT}/computervision/imageanalysis:analyze?api-version=${API_VERSION}&features=${featureParam}&language=${lang}&gender-neutral-caption=true`;
+};
+
 // Analyze image from file upload
 export const analyzeImage = async (file: File, options: AnalysisOptions): Promise<AnalysisResult> => {
-  const features = options.visualFeatures.join(',');
-  const url = `${AZURE_ENDPOINT}/vision/v3.2/analyze?visualFeatures=${features}&language=${options.language || 'en'}`;
+  const url = buildUrl(options.visualFeatures, options.language);
 
   const response = await fetch(url, {
     method: 'POST',
@@ -49,24 +55,20 @@ export const analyzeImage = async (file: File, options: AnalysisOptions): Promis
   }
 
   const data = await response.json();
-  
+
   // Determine result type based on features
+  const features = options.visualFeatures.join(',');
   let type: AnalysisResult['type'] = 'tags';
-  if (features.includes('Objects')) {
-    type = 'objects';
-  } else if (features.includes('DenseCaptions')) {
-    type = 'denseCaptions';
-  } else if (features.includes('Description')) {
-    type = 'analysis';
-  }
+  if (features.includes('Objects')) type = 'objects';
+  else if (features.includes('DenseCaptions')) type = 'denseCaptions';
+  else if (features.includes('Caption')) type = 'analysis';
 
   return { type, data };
 };
 
 // Analyze image from URL
 export const analyzeImageFromUrl = async (imageUrl: string, options: AnalysisOptions): Promise<AnalysisResult> => {
-  const features = options.visualFeatures.join(',');
-  const url = `${AZURE_ENDPOINT}/vision/v3.2/analyze?visualFeatures=${features}&language=${options.language || 'en'}`;
+  const url = buildUrl(options.visualFeatures, options.language);
 
   const response = await fetch(url, {
     method: 'POST',
@@ -83,87 +85,72 @@ export const analyzeImageFromUrl = async (imageUrl: string, options: AnalysisOpt
   }
 
   const data = await response.json();
-  
+
   // Determine result type based on features
+  const features = options.visualFeatures.join(',');
   let type: AnalysisResult['type'] = 'tags';
-  if (features.includes('Objects')) {
-    type = 'objects';
-  } else if (features.includes('DenseCaptions')) {
-    type = 'denseCaptions';
-  } else if (features.includes('Description')) {
-    type = 'analysis';
-  }
+  if (features.includes('Objects')) type = 'objects';
+  else if (features.includes('DenseCaptions')) type = 'denseCaptions';
+  else if (features.includes('Caption')) type = 'analysis';
 
   return { type, data };
 };
 
-// Helper function to validate image URL
+// Validate a URL points to an image (best-effort)
 export const validateImageUrl = async (url: string): Promise<boolean> => {
+  const hasImageExt = /\.(png|jpe?g|webp|gif|bmp|svg)$/i.test(url);
+  if (hasImageExt) return true;
   try {
     const response = await fetch(url, { method: 'HEAD' });
     const contentType = response.headers.get('content-type');
-    return contentType?.startsWith('image/') || false;
+    return !!contentType && contentType.startsWith('image/');
   } catch {
     return false;
   }
 };
 
-// Helper function to format analysis results
+// Normalized formatter for UI
 export const formatResults = (result: AnalysisResult) => {
+  const d = result.data || {};
   switch (result.type) {
     case 'tags':
       return {
         title: 'Image Tags',
-        items: result.data.tags?.map((tag: any) => ({
-          name: tag.name,
-          confidence: tag.confidence,
-        })) || [],
+        items: d.tagsResult?.values?.map((tag: any) => ({ name: tag.name, confidence: tag.confidence })) || [],
       };
-    
+
     case 'denseCaptions':
       return {
         title: 'Dense Captions',
-        description: result.data.description?.captions?.[0]?.text || 'No description available',
-        captions: result.data.denseCaptions?.values?.map((caption: any) => ({
-          text: caption.text,
-          confidence: caption.confidence,
-          boundingBox: caption.boundingBox,
+        description: d.captionResult?.text || 'No description available',
+        captions: d.denseCaptionsResult?.values?.map((c: any) => ({
+          text: c.text,
+          confidence: c.confidence,
+          boundingBox: c.boundingBox,
         })) || [],
-        tags: result.data.tags?.map((tag: any) => ({
-          name: tag.name,
-          confidence: tag.confidence,
-        })) || [],
+        tags: d.tagsResult?.values?.map((t: any) => ({ name: t.name, confidence: t.confidence })) || [],
       };
-    
+
     case 'analysis':
       return {
         title: 'Image Analysis',
-        description: result.data.description?.captions?.[0]?.text || 'No description available',
-        confidence: result.data.description?.captions?.[0]?.confidence || 0,
-        categories: result.data.categories?.map((cat: any) => ({
-          name: cat.name,
-          confidence: cat.score,
-        })) || [],
-        tags: result.data.tags?.map((tag: any) => ({
-          name: tag.name,
-          confidence: tag.confidence,
-        })) || [],
+        description: d.captionResult?.text || 'No description available',
+        confidence: d.captionResult?.confidence || 0,
+        categories: [],
+        tags: d.tagsResult?.values?.map((t: any) => ({ name: t.name, confidence: t.confidence })) || [],
       };
-    
+
     case 'objects':
       return {
         title: 'Object Detection',
-        objects: result.data.objects?.map((obj: any) => ({
-          object: obj.object,
-          confidence: obj.confidence,
-          rectangle: obj.rectangle,
+        objects: d.objectsResult?.values?.map((o: any) => ({
+          object: o.tags?.[0]?.name || 'object',
+          confidence: o.tags?.[0]?.confidence ?? o.confidence ?? 0,
+          rectangle: o.boundingBox,
         })) || [],
-        tags: result.data.tags?.map((tag: any) => ({
-          name: tag.name,
-          confidence: tag.confidence,
-        })) || [],
+        tags: d.tagsResult?.values?.map((t: any) => ({ name: t.name, confidence: t.confidence })) || [],
       };
-    
+
     default:
       return { title: 'Unknown', items: [] };
   }

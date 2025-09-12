@@ -1,5 +1,6 @@
-import { Cloud, User, Volume2 } from "lucide-react";
+import { User, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import logo from "@/assets/pixalyze-logo.jpg";
 
 const Navigation = () => {
   return (
@@ -8,11 +9,11 @@ const Navigation = () => {
       <nav className="glass-card px-6 py-4 mb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
-              <Cloud className="w-4 h-4 text-primary-foreground" />
+            <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center overflow-hidden">
+              <img src={logo} alt="Pixalyze logo" className="w-6 h-6 rounded" />
             </div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              AI Image Analyzer
+            <h1 className="text-xl font-bold font-brand bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Pixalyze
             </h1>
           </div>
           

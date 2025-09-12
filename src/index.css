@@ -159,6 +159,13 @@
     animation: spin 1s linear infinite;
   }
 
+  /* Scale-in animation */
+  .scale-in { animation: scaleIn 0.35s ease-out; }
+  @keyframes scaleIn {
+    0% { transform: scale(0.92); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
   @keyframes spin {
     to {
       transform: rotate(360deg);

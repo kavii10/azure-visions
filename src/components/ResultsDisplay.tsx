@@ -116,9 +116,9 @@ const ResultsDisplay = ({ result, onToggleObjects, showObjects }: ResultsDisplay
             <h5 className="font-semibold text-foreground mb-2">Description</h5>
             <p className="text-foreground bg-primary/10 p-4 rounded-lg">
               {formatted.description}
-              {'confidence' in formatted && formatted.confidence && (
+              {'confidence' in formatted && typeof formatted.confidence === 'number' && (
                 <span className="ml-2 text-sm text-muted-foreground">
-                  ({Math.round(formatted.confidence * 100)}% confidence)
+                  ({Math.round((formatted.confidence as number) * 100)}% confidence)
                 </span>
               )}
             </p>

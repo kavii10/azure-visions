@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
+import { validateImageUrl } from '@/services/azureVisionService';
 
 interface ImageUploadProps {
   onFileSelect: (file: File) => void;
@@ -52,16 +53,22 @@ const ImageUpload = ({ onFileSelect, onUrlSelect, uploadedFile, imageUrl }: Imag
     }
   };
 
-  const handleUrlSubmit = () => {
-    if (!urlInput.trim()) {
+  const handleUrlSubmit = async () => {
+    const url = urlInput.trim();
+    if (!url) {
       toast.error('Please enter a valid URL');
       return;
     }
 
     // Basic URL validation
     try {
-      new URL(urlInput);
-      onUrlSelect(urlInput);
+      new URL(url);
+      const isImage = /\.(png|jpe?g|webp|gif|bmp|svg)$/i.test(url) || (await validateImageUrl(url));
+      if (!isImage) {
+        toast.error('Please paste a direct image URL (e.g., .jpg, .png, .webp)');
+        return;
+      }
+      onUrlSelect(url);
       toast.success('Image loaded from URL!');
     } catch {
       toast.error('Please enter a valid URL');

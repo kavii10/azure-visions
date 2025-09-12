@@ -26,7 +26,8 @@ const ImagePreview = ({ file, imageUrl, analysisResult, showObjects }: ImagePrev
   const drawObjectDetection = () => {
     const canvas = canvasRef.current;
     const image = imageRef.current;
-    if (!canvas || !image || !analysisResult?.data.objects) return;
+    const rawObjects = (analysisResult?.data?.objects) || (analysisResult?.data?.objectsResult?.values);
+    if (!canvas || !image || !rawObjects) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -43,8 +44,8 @@ const ImagePreview = ({ file, imageUrl, analysisResult, showObjects }: ImagePrev
     ctx.lineWidth = 2;
     ctx.font = '12px Inter, sans-serif';
 
-    analysisResult.data.objects.forEach((obj: any) => {
-      const rect = obj.rectangle;
+    rawObjects.forEach((obj: any) => {
+      const rect = obj.rectangle || obj.boundingBox;
       const x = rect.x * scaleX;
       const y = rect.y * scaleY;
       const width = rect.w * scaleX;
@@ -54,7 +55,9 @@ const ImagePreview = ({ file, imageUrl, analysisResult, showObjects }: ImagePrev
       ctx.strokeRect(x, y, width, height);
 
       // Draw label background
-      const label = `${obj.object} (${Math.round(obj.confidence * 100)}%)`;
+      const confidence = obj.confidence ?? obj.tags?.[0]?.confidence ?? 0;
+      const name = obj.object ?? obj.tags?.[0]?.name ?? 'object';
+      const label = `${name} (${Math.round(confidence * 100)}%)`;
       const textWidth = ctx.measureText(label).width;
       ctx.fillRect(x, y - 20, textWidth + 8, 18);
 
