@@ -1,6 +1,8 @@
 // Azure AI Vision API Service (Image Analysis 4.0)
-const AZURE_ENDPOINT = "https://vision54605927.cognitiveservices.azure.com";
-const API_KEY = "6T8n1bGozWj5GjP5jZJL53dXTeK1Y3FN8One3sKXzTgRGvuuexzYJQQJ99BIACqBBLyXJ3w3AAAFACOGJjcG";
+const getAzureEndpoint = () => 
+  localStorage.getItem('azure_endpoint') || "https://vision54605927.cognitiveservices.azure.com";
+const getApiKey = () => 
+  localStorage.getItem('azure_api_key') || "6T8n1bGozWj5GjP5jZJL53dXTeK1Y3FN8One3sKXzTgRGvuuexzYJQQJ99BIACqBBLyXJ3w3AAAFACOGJjcG";
 const API_VERSION = "2023-10-01";
 
 export interface AnalysisResult {
@@ -33,7 +35,7 @@ export const getAnalysisOptions = (type: string): AnalysisOptions => {
 const buildUrl = (features: string[], language?: string) => {
   const featureParam = encodeURIComponent(features.join(','));
   const lang = language || 'en';
-  return `${AZURE_ENDPOINT}/computervision/imageanalysis:analyze?api-version=${API_VERSION}&features=${featureParam}&language=${lang}&gender-neutral-caption=true`;
+  return `${getAzureEndpoint()}/computervision/imageanalysis:analyze?api-version=${API_VERSION}&features=${featureParam}&language=${lang}&gender-neutral-caption=true`;
 };
 
 // Analyze image from file upload
@@ -43,7 +45,7 @@ export const analyzeImage = async (file: File, options: AnalysisOptions): Promis
   const response = await fetch(url, {
     method: 'POST',
     headers: {
-      'Ocp-Apim-Subscription-Key': API_KEY,
+      'Ocp-Apim-Subscription-Key': getApiKey(),
       'Content-Type': 'application/octet-stream',
     },
     body: file,
@@ -73,7 +75,7 @@ export const analyzeImageFromUrl = async (imageUrl: string, options: AnalysisOpt
   const response = await fetch(url, {
     method: 'POST',
     headers: {
-      'Ocp-Apim-Subscription-Key': API_KEY,
+      'Ocp-Apim-Subscription-Key': getApiKey(),
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ url: imageUrl }),

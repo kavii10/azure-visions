@@ -1,8 +1,12 @@
+import { useState } from "react";
 import { User, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ApiConfigDialog from "@/components/ApiConfigDialog";
 import logo from "@/assets/pixalyze-logo.jpg";
 
 const Navigation = () => {
+  const [showApiDialog, setShowApiDialog] = useState(false);
+
   return (
     <div className="w-full">
       {/* Top Navigation */}
@@ -41,8 +45,21 @@ const Navigation = () => {
               {item}
             </Button>
           ))}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground hover:bg-glass-border/30"
+            onClick={() => setShowApiDialog(true)}
+          >
+            API
+          </Button>
         </div>
       </div>
+
+      <ApiConfigDialog 
+        open={showApiDialog} 
+        onOpenChange={setShowApiDialog} 
+      />
     </div>
   );
 };
