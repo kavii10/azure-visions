@@ -166,6 +166,45 @@
     100% { transform: scale(1); opacity: 1; }
   }
 
+  /* Splash screen animations */
+  .animate-bounce-slow { animation: bounce-slow 2s ease-in-out infinite; }
+  .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+  .animate-slide-up { animation: slide-up 0.8s ease-out 1s both; }
+  .animate-gradient-x { animation: gradient-x 3s ease infinite; }
+  .animate-fade-in-delayed { animation: fade-in-delayed 2s ease-out; }
+
+  @keyframes bounce-slow {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-20px); }
+    60% { transform: translateY(-10px); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { 
+      transform: scale(1);
+      filter: drop-shadow(0 0 20px hsl(var(--primary) / 0.5));
+    }
+    50% { 
+      transform: scale(1.05);
+      filter: drop-shadow(0 0 30px hsl(var(--primary) / 0.8));
+    }
+  }
+
+  @keyframes slide-up {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes gradient-x {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  @keyframes fade-in-delayed {
+    0%, 60% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
   @keyframes spin {
     to {
       transform: rotate(360deg);

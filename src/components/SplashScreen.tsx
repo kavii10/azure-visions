@@ -13,20 +13,22 @@ const SplashScreen = ({ visible }: SplashScreenProps) => {
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
-      <div className="absolute inset-0 pointer-events-none" aria-hidden="true" />
-
-      <div className="text-center animate-fade-in">
-        <img
-          src={logo}
-          alt="Pixalyze logo"
-          className="w-24 h-24 mx-auto rounded-2xl shadow-2xl animate-scale-in"
-          loading="eager"
-        />
-        <h1 className="mt-5 text-4xl md:text-5xl font-extrabold font-brand bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent tracking-wide">
-          Pixalyze
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">AI Image Analyzer</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
+      <div className="text-center">
+        <div className="animate-bounce-slow">
+          <img
+            src={logo}
+            alt="Pixalyze logo"
+            className="w-32 h-32 mx-auto rounded-3xl shadow-2xl animate-pulse-glow mb-8"
+            loading="eager"
+          />
+        </div>
+        <div className="animate-slide-up">
+          <h1 className="text-5xl md:text-6xl font-extrabold font-brand bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent tracking-wide animate-gradient-x">
+            Pixalyze
+          </h1>
+          <p className="mt-4 text-lg text-muted-foreground animate-fade-in-delayed">AI Image Analyzer</p>
+        </div>
       </div>
     </div>
   );
