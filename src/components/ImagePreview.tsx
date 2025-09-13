@@ -87,9 +87,7 @@ const ImagePreview = ({ file, imageUrl, analysisResult, showObjects }: ImagePrev
 
   if (!displaySrc) {
     return (
-      <div className="space-y-4 h-full">
-        <h3 className="text-lg font-semibold text-foreground">Image Preview</h3>
-        <div className="glass-card h-80 flex items-center justify-center">
+      <div className="glass-card h-64 flex items-center justify-center">
         <div className="text-center text-muted-foreground">
           <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-lg flex items-center justify-center">
             <svg
@@ -109,7 +107,6 @@ const ImagePreview = ({ file, imageUrl, analysisResult, showObjects }: ImagePrev
           <p>No image selected</p>
           <p className="text-sm">Upload an image to see the preview</p>
         </div>
-        </div>
       </div>
     );
   }
@@ -118,13 +115,13 @@ const ImagePreview = ({ file, imageUrl, analysisResult, showObjects }: ImagePrev
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-foreground">Image Preview</h3>
       
-      <div className="glass-card p-4 h-80 flex items-center justify-center">
+      <div className="glass-card p-4">
         <div className="relative inline-block">
           <img
             ref={imageRef}
             src={displaySrc}
             alt="Preview"
-            className="max-w-full max-h-72 rounded-lg object-contain"
+            className="max-w-full max-h-96 rounded-lg"
             onLoad={handleImageLoad}
           />
           <canvas
