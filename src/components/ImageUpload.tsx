@@ -81,7 +81,7 @@ const ImageUpload = ({ onFileSelect, onUrlSelect, uploadedFile, imageUrl }: Imag
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 h-full">
       <h3 className="text-lg font-semibold text-foreground mb-4">Upload Image</h3>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -98,7 +98,7 @@ const ImageUpload = ({ onFileSelect, onUrlSelect, uploadedFile, imageUrl }: Imag
 
         <TabsContent value="file">
           <div
-            className={`upload-area ${dragOver ? 'dragover' : ''} p-8 text-center`}
+            className={`upload-area ${dragOver ? 'dragover' : ''} p-8 text-center h-80 flex items-center justify-center`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -143,7 +143,7 @@ const ImageUpload = ({ onFileSelect, onUrlSelect, uploadedFile, imageUrl }: Imag
         </TabsContent>
 
         <TabsContent value="url">
-          <div className="glass-card p-6 space-y-4">
+          <div className="glass-card p-6 space-y-4 h-80 flex flex-col justify-center">
             <div>
               <label className="text-sm font-medium text-foreground block mb-2">
                 Image URL

@@ -43,7 +43,7 @@ const FeatureButtons = ({ onAnalyze, disabled, isLoading }: FeatureButtonsProps)
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-foreground">Analysis Features</h3>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="flex flex-wrap gap-3">
         {features.map((feature) => {
           const Icon = feature.icon;
           
@@ -52,12 +52,12 @@ const FeatureButtons = ({ onAnalyze, disabled, isLoading }: FeatureButtonsProps)
               key={feature.id}
               onClick={() => onAnalyze(feature.id)}
               disabled={disabled || isLoading}
-              className={`${feature.className} p-6 h-auto flex-col space-y-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed`}
+              className="feature-blue text-white hover:opacity-90 p-4 h-auto flex-col space-y-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed min-w-[140px] flex-1"
             >
-              <Icon className="w-8 h-8" />
+              <Icon className="w-6 h-6" />
               <div className="text-center">
-                <div className="font-semibold">{feature.title}</div>
-                <div className="text-sm opacity-90">{feature.description}</div>
+                <div className="font-semibold text-sm">{feature.title}</div>
+                <div className="text-xs opacity-90">{feature.description}</div>
               </div>
             </Button>
           );
