@@ -11,29 +11,17 @@ interface ApiConfigDialogProps {
 }
 
 const ApiConfigDialog = ({ open, onOpenChange }: ApiConfigDialogProps) => {
-  const [endpoint, setEndpoint] = useState(() => 
-    localStorage.getItem('azure_endpoint') || 'https://vision54605927.cognitiveservices.azure.com'
-  );
   const [apiKey, setApiKey] = useState(() => 
-    localStorage.getItem('azure_api_key') || '6T8n1bGozWj5GjP5jZJL53dXTeK1Y3FN8One3sKXzTgRGvuuexzYJQQJ99BIACqBBLyXJ3w3AAAFACOGJjcG'
+    localStorage.getItem('gemini_api_key') || 'AIzaSyD_5BSvYlxsTP1dLG7Dmz65rokrfCooRy4'
   );
 
   const handleSave = () => {
-    if (!endpoint.trim() || !apiKey.trim()) {
-      toast.error('Please fill in both endpoint and API key');
+    if (!apiKey.trim()) {
+      toast.error('Please enter your API key');
       return;
     }
 
-    // Validate endpoint format
-    try {
-      new URL(endpoint);
-    } catch {
-      toast.error('Please enter a valid endpoint URL');
-      return;
-    }
-
-    localStorage.setItem('azure_endpoint', endpoint.trim());
-    localStorage.setItem('azure_api_key', apiKey.trim());
+    localStorage.setItem('gemini_api_key', apiKey.trim());
     
     toast.success('API configuration updated successfully!');
     onOpenChange(false);
@@ -49,31 +37,31 @@ const ApiConfigDialog = ({ open, onOpenChange }: ApiConfigDialogProps) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>API Configuration</DialogTitle>
+          <DialogTitle>Google Gemini API Configuration</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="endpoint">Computer Vision Endpoint</Label>
-            <Input
-              id="endpoint"
-              value={endpoint}
-              onChange={(e) => setEndpoint(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="https://your-resource.cognitiveservices.azure.com"
-              className="w-full"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="apiKey">API Key</Label>
+            <Label htmlFor="apiKey">Gemini API Key</Label>
             <Input
               id="apiKey"
               type="password"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Enter your API key"
+              placeholder="Enter your Google AI Studio API key"
               className="w-full"
             />
+            <p className="text-xs text-muted-foreground">
+              Get your API key from{' '}
+              <a 
+                href="https://aistudio.google.com/app/apikey" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-primary hover:underline"
+              >
+                Google AI Studio
+              </a>
+            </p>
           </div>
           <div className="flex justify-end space-x-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>

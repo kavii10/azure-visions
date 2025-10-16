@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { validateImageUrl } from '@/services/azureVisionService';
+import { validateImageUrl } from '@/services/geminiVisionService';
 
 interface ImageUploadProps {
   onFileSelect: (file: File) => void;

@@ -6,7 +6,7 @@ import FeatureButtons from '@/components/FeatureButtons';
 import ResultsDisplay from '@/components/ResultsDisplay';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import Footer from '@/components/Footer';
-import { analyzeImage, analyzeImageFromUrl, getAnalysisOptions, AnalysisResult } from '@/services/azureVisionService';
+import { analyzeImage, analyzeImageFromUrl, getAnalysisOptions, AnalysisResult } from '@/services/geminiVisionService';
 import { toast } from 'sonner';
 import heroImage from '@/assets/hero-banner.jpg';
 
@@ -89,7 +89,7 @@ const Index = () => {
                   AI Image Analyzer
                 </h1>
                 <p className="text-xl md:text-2xl text-white/90 drop-shadow">
-                  Powered by Azure Cognitive Services
+                  Powered by Google Gemini AI
                 </p>
               </div>
             </div>

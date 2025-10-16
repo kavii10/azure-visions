@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { AnalysisResult } from '@/services/azureVisionService';
+import { AnalysisResult } from '@/services/geminiVisionService';
 
 interface ImagePreviewProps {
   file: File | null;
