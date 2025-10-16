@@ -132,7 +132,7 @@ Identify all visible objects with their bounding boxes and provide general tags.
 export const analyzeImage = async (file: File, options: AnalysisOptions): Promise<AnalysisResult> => {
   try {
     const genAI = new GoogleGenerativeAI(getApiKey());
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const imagePart = await fileToGenerativePart(file);
     const type = options.visualFeatures.includes('Objects') ? 'objects' 
