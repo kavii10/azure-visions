@@ -111,7 +111,7 @@ Provide a detailed description and relevant tags.`;
     "values": [
       {
         "tags": [{"name": "object_name", "confidence": 0.95}],
-        "boundingBox": {"x": 10, "y": 20, "w": 100, "h": 150}
+        "boundingBox": {"x": 0.1, "y": 0.2, "w": 0.3, "h": 0.4}
       }
     ]
   },
@@ -121,6 +121,8 @@ Provide a detailed description and relevant tags.`;
     ]
   }
 }
+IMPORTANT: boundingBox coordinates must be normalized values between 0 and 1 (relative to image dimensions).
+x and y are the top-left corner position (0-1 range), w and h are width and height (0-1 range).
 Identify all visible objects with their bounding boxes and provide general tags.`;
 
     default:

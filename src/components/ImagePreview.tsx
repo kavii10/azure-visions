@@ -35,21 +35,27 @@ const ImagePreview = ({ file, imageUrl, analysisResult, showObjects }: ImagePrev
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Calculate scaling factors
-    const scaleX = image.offsetWidth / image.naturalWidth;
-    const scaleY = image.offsetHeight / image.naturalHeight;
+    // Display dimensions
+    const displayWidth = image.offsetWidth;
+    const displayHeight = image.offsetHeight;
 
     ctx.strokeStyle = '#8B5CF6';
     ctx.fillStyle = '#8B5CF6';
-    ctx.lineWidth = 2;
-    ctx.font = '12px Inter, sans-serif';
+    ctx.lineWidth = 3;
+    ctx.font = '14px Inter, sans-serif';
 
     rawObjects.forEach((obj: any) => {
       const rect = obj.rectangle || obj.boundingBox;
-      const x = rect.x * scaleX;
-      const y = rect.y * scaleY;
-      const width = rect.w * scaleX;
-      const height = rect.h * scaleY;
+      if (!rect) return;
+
+      // Check if coordinates are normalized (0-1) or absolute pixels
+      const isNormalized = rect.x <= 1 && rect.y <= 1 && rect.w <= 1 && rect.h <= 1;
+      
+      // Convert to display coordinates
+      const x = isNormalized ? rect.x * displayWidth : rect.x * (displayWidth / image.naturalWidth);
+      const y = isNormalized ? rect.y * displayHeight : rect.y * (displayHeight / image.naturalHeight);
+      const width = isNormalized ? rect.w * displayWidth : rect.w * (displayWidth / image.naturalWidth);
+      const height = isNormalized ? rect.h * displayHeight : rect.h * (displayHeight / image.naturalHeight);
 
       // Draw bounding box
       ctx.strokeRect(x, y, width, height);
