@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnalysisResult } from '@/services/geminiVisionService';
+import { Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 interface ImagePreviewProps {
   file: File | null;
@@ -89,6 +92,67 @@ const ImagePreview = ({ file, imageUrl, analysisResult, showObjects }: ImagePrev
     }
   };
 
+  const handleDownload = () => {
+    if (!imageRef.current) return;
+
+    const downloadCanvas = document.createElement('canvas');
+    const ctx = downloadCanvas.getContext('2d');
+    if (!ctx) return;
+
+    const img = imageRef.current;
+    downloadCanvas.width = img.naturalWidth;
+    downloadCanvas.height = img.naturalHeight;
+
+    // Draw original image
+    ctx.drawImage(img, 0, 0);
+
+    // Draw bounding boxes if object detection is active
+    if (analysisResult?.type === 'objects' && showObjects) {
+      const rawObjects = (analysisResult?.data?.objects) || (analysisResult?.data?.objectsResult?.values);
+      if (rawObjects) {
+        ctx.strokeStyle = '#8B5CF6';
+        ctx.fillStyle = '#8B5CF6';
+        ctx.lineWidth = 6;
+        ctx.font = '24px Inter, sans-serif';
+
+        rawObjects.forEach((obj: any) => {
+          const rect = obj.rectangle || obj.boundingBox;
+          if (!rect) return;
+
+          const isNormalized = rect.x <= 1 && rect.y <= 1 && rect.w <= 1 && rect.h <= 1;
+          const x = isNormalized ? rect.x * img.naturalWidth : rect.x;
+          const y = isNormalized ? rect.y * img.naturalHeight : rect.y;
+          const width = isNormalized ? rect.w * img.naturalWidth : rect.w;
+          const height = isNormalized ? rect.h * img.naturalHeight : rect.h;
+
+          ctx.strokeRect(x, y, width, height);
+
+          const confidence = obj.confidence ?? obj.tags?.[0]?.confidence ?? 0;
+          const name = obj.object ?? obj.tags?.[0]?.name ?? 'object';
+          const label = `${name} (${Math.round(confidence * 100)}%)`;
+          const textWidth = ctx.measureText(label).width;
+          ctx.fillRect(x, y - 32, textWidth + 16, 30);
+
+          ctx.fillStyle = 'white';
+          ctx.fillText(label, x + 8, y - 10);
+          ctx.fillStyle = '#8B5CF6';
+        });
+      }
+    }
+
+    // Convert to blob and download
+    downloadCanvas.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `analyzed-image-${Date.now()}.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success('Image downloaded successfully!');
+    });
+  };
+
   const displaySrc = file ? URL.createObjectURL(file) : imageUrl;
 
   if (!displaySrc) {
@@ -119,7 +183,17 @@ const ImagePreview = ({ file, imageUrl, analysisResult, showObjects }: ImagePrev
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-foreground">Image Preview</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-foreground">Image Preview</h3>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleDownload}
+          title="Download image with bounding boxes"
+        >
+          <Download className="h-4 w-4" />
+        </Button>
+      </div>
       
       <div className="glass-card p-4">
         <div className="relative inline-block">
