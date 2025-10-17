@@ -95,62 +95,72 @@ const ImagePreview = ({ file, imageUrl, analysisResult, showObjects }: ImagePrev
   const handleDownload = () => {
     if (!imageRef.current) return;
 
-    const downloadCanvas = document.createElement('canvas');
-    const ctx = downloadCanvas.getContext('2d');
-    if (!ctx) return;
+    const displaySrc = file ? URL.createObjectURL(file) : imageUrl;
+    if (!displaySrc) return;
 
-    const img = imageRef.current;
-    downloadCanvas.width = img.naturalWidth;
-    downloadCanvas.height = img.naturalHeight;
+    // Create a new image to ensure it's fully loaded
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    
+    img.onload = () => {
+      const downloadCanvas = document.createElement('canvas');
+      const ctx = downloadCanvas.getContext('2d');
+      if (!ctx) return;
 
-    // Draw original image
-    ctx.drawImage(img, 0, 0);
+      downloadCanvas.width = img.width;
+      downloadCanvas.height = img.height;
 
-    // Draw bounding boxes if object detection is active
-    if (analysisResult?.type === 'objects' && showObjects) {
-      const rawObjects = (analysisResult?.data?.objects) || (analysisResult?.data?.objectsResult?.values);
-      if (rawObjects) {
-        ctx.strokeStyle = '#8B5CF6';
-        ctx.fillStyle = '#8B5CF6';
-        ctx.lineWidth = 6;
-        ctx.font = '24px Inter, sans-serif';
+      // Draw the image first
+      ctx.drawImage(img, 0, 0);
 
-        rawObjects.forEach((obj: any) => {
-          const rect = obj.rectangle || obj.boundingBox;
-          if (!rect) return;
-
-          const isNormalized = rect.x <= 1 && rect.y <= 1 && rect.w <= 1 && rect.h <= 1;
-          const x = isNormalized ? rect.x * img.naturalWidth : rect.x;
-          const y = isNormalized ? rect.y * img.naturalHeight : rect.y;
-          const width = isNormalized ? rect.w * img.naturalWidth : rect.w;
-          const height = isNormalized ? rect.h * img.naturalHeight : rect.h;
-
-          ctx.strokeRect(x, y, width, height);
-
-          const confidence = obj.confidence ?? obj.tags?.[0]?.confidence ?? 0;
-          const name = obj.object ?? obj.tags?.[0]?.name ?? 'object';
-          const label = `${name} (${Math.round(confidence * 100)}%)`;
-          const textWidth = ctx.measureText(label).width;
-          ctx.fillRect(x, y - 32, textWidth + 16, 30);
-
-          ctx.fillStyle = 'white';
-          ctx.fillText(label, x + 8, y - 10);
+      // Draw bounding boxes if object detection is active
+      if (analysisResult?.type === 'objects' && showObjects) {
+        const rawObjects = (analysisResult?.data?.objects) || (analysisResult?.data?.objectsResult?.values);
+        if (rawObjects) {
+          ctx.strokeStyle = '#8B5CF6';
           ctx.fillStyle = '#8B5CF6';
-        });
-      }
-    }
+          ctx.lineWidth = 6;
+          ctx.font = '24px Inter, sans-serif';
 
-    // Convert to blob and download
-    downloadCanvas.toBlob((blob) => {
-      if (!blob) return;
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `analyzed-image-${Date.now()}.png`;
-      a.click();
-      URL.revokeObjectURL(url);
-      toast.success('Image downloaded successfully!');
-    });
+          rawObjects.forEach((obj: any) => {
+            const rect = obj.rectangle || obj.boundingBox;
+            if (!rect) return;
+
+            const isNormalized = rect.x <= 1 && rect.y <= 1 && rect.w <= 1 && rect.h <= 1;
+            const x = isNormalized ? rect.x * img.width : rect.x;
+            const y = isNormalized ? rect.y * img.height : rect.y;
+            const width = isNormalized ? rect.w * img.width : rect.w;
+            const height = isNormalized ? rect.h * img.height : rect.h;
+
+            ctx.strokeRect(x, y, width, height);
+
+            const confidence = obj.confidence ?? obj.tags?.[0]?.confidence ?? 0;
+            const name = obj.object ?? obj.tags?.[0]?.name ?? 'object';
+            const label = `${name} (${Math.round(confidence * 100)}%)`;
+            const textWidth = ctx.measureText(label).width;
+            ctx.fillRect(x, y - 32, textWidth + 16, 30);
+
+            ctx.fillStyle = 'white';
+            ctx.fillText(label, x + 8, y - 10);
+            ctx.fillStyle = '#8B5CF6';
+          });
+        }
+      }
+
+      // Convert to blob and download
+      downloadCanvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `analyzed-image-${Date.now()}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+        toast.success('Image downloaded successfully!');
+      });
+    };
+
+    img.src = displaySrc;
   };
 
   const displaySrc = file ? URL.createObjectURL(file) : imageUrl;
