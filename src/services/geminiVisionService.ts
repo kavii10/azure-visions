@@ -2,7 +2,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const getApiKey = () => 
-  localStorage.getItem('gemini_api_key') || "AIzaSyD_5BSvYlxsTP1dLG7Dmz65rokrfCooRy4";
+  localStorage.getItem('gemini_api_key') || "AIzaSyDrXy6Iav-yQdRfjlr-fqWXzByxK0E_REM";
 
 export interface AnalysisResult {
   type: 'tags' | 'denseCaptions' | 'analysis' | 'objects';

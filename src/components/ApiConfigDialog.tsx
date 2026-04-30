@@ -12,7 +12,7 @@ interface ApiConfigDialogProps {
 
 const ApiConfigDialog = ({ open, onOpenChange }: ApiConfigDialogProps) => {
   const [apiKey, setApiKey] = useState(() => 
-    localStorage.getItem('gemini_api_key') || 'AIzaSyD_5BSvYlxsTP1dLG7Dmz65rokrfCooRy4'
+    localStorage.getItem('gemini_api_key') || 'AIzaSyDrXy6Iav-yQdRfjlr-fqWXzByxK0E_REM'
   );
 
   const handleSave = () => {
